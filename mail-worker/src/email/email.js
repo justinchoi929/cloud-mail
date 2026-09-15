@@ -71,6 +71,11 @@ export async function email(message, env, ctx) {
 			}
 		}
 
+		// 未匹配到账号时，兜底投递给管理员
+		if (!account) {
+			account = await accountService.selectByEmailIncludeDel({ env: env }, env.admin);
+		}
+
 		if (!account && noRecipient === settingConst.noRecipient.CLOSE) {
 			message.setReject('Recipient not found');
 			return;
